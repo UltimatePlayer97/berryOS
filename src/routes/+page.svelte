@@ -1,7 +1,9 @@
 <script>
   import { onMount } from "svelte";
-  import Window from "$lib/components/Window.svelte";
   import { base } from "$app/paths";
+
+  import WelcomeApp from "$lib/apps/WelcomeApp.svelte";
+  import NotesApp from "$lib/apps/NotesApp.svelte";
 
   let currentTime = $state("");
 
@@ -11,11 +13,10 @@
   });
 
   onMount(() => {
-    window.biggestIndex = 10;
+    /** @type {*} */ (window).biggestIndex = 10;
     const updateTime = () => (currentTime = new Date().toLocaleString());
     const timer = setInterval(updateTime, 1000);
     updateTime();
-
     return () => clearInterval(timer);
   });
 
@@ -24,9 +25,7 @@
     apps[appName] = !apps[appName];
   }
 
-  /** * @param {KeyboardEvent} e
-   * @param {'welcome' | 'notes'} appName
-   */
+  /** @param {KeyboardEvent} e @param {'welcome' | 'notes'} appName */
   function handleKeyDown(e, appName) {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -48,47 +47,8 @@
   <p>{currentTime || "TIME"}</p>
 </div>
 
-<Window
-  title="Welcome to berryOS"
-  isOpen={apps.welcome}
-  onClose={() => (apps.welcome = false)}
->
-  <div class="flex flex-col items-center">
-    <img
-      src="/assets/star.png"
-      alt="Star"
-      class="w-25 h-25 object-cover rounded-full border-3 border-[#f5c2e7] mt-2"
-    />
-    <h1
-      class="text-[#f5c2e7] text-3xl font-bold border-b-2 border-[#f5c2e7] pb-2 w-full text-center mt-2"
-    >
-      Welcome to berryOS
-    </h1>
-  </div>
-  <hr class="border-0 border-t border-[#45475a] my-5" />
-  <h2 class="text-[#f5c2e7] text-xl font-bold">
-    User Profile: Developer & Gamer
-  </h2>
-  <p class="mt-2 text-white/80">
-    <strong>Core Languages:</strong> Go, C#, and C++
-  </p>
-</Window>
-
-<Window
-  title="Hacker Notes"
-  isOpen={apps.notes}
-  onClose={() => (apps.notes = false)}
->
-  <h1
-    class="text-[#f5c2e7] text-3xl font-bold border-b-2 border-[#f5c2e7] pb-2 w-full"
-  >
-    Notes
-  </h1>
-  <hr class="border-0 border-t border-[#45475a] my-5" />
-  <p class="text-white/80">
-    Welcome to your workspace notes built with SvelteKit, Bun, and TailwindCSS!
-  </p>
-</Window>
+<WelcomeApp isOpen={apps.welcome} onClose={() => (apps.welcome = false)} />
+<NotesApp isOpen={apps.notes} onClose={() => (apps.notes = false)} />
 
 <div class="pt-16 pl-4 h-[calc(100vh-100px)]"></div>
 
@@ -108,7 +68,7 @@
       onkeydown={(e) => handleKeyDown(e, "welcome")}
     >
       <img
-        src="/assets/welcome.jpg"
+        src="{base}/assets/welcome.jpg"
         alt="Welcome"
         class="w-12.5 h-12.5 rounded-xl block object-cover shadow-md transition-all"
         class:shadow-[0_0_12px_rgba(245,194,231,0.6)]={apps.welcome}
@@ -129,7 +89,7 @@
       onkeydown={(e) => handleKeyDown(e, "notes")}
     >
       <img
-        src="/assets/notes.jpg"
+        src="{base}/assets/notes.jpg"
         alt="Notes"
         class="w-12.5 h-12.5 rounded-xl block object-cover shadow-md transition-all"
         class:shadow-[0_0_12px_rgba(245,194,231,0.6)]={apps.notes}
