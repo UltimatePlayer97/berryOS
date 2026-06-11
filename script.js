@@ -1,6 +1,5 @@
-// --- Time Display Logic ---
 let currentTime;
-let timeText = document.querySelector("#timeElement");
+const timeText = document.querySelector("#timeElement");
 
 function updateTime() {
   currentTime = new Date().toLocaleString();
@@ -10,10 +9,10 @@ setInterval(updateTime, 1000);
 updateTime();
 
 function dragElement(element) {
-  var initialX = 0;
-  var initialY = 0;
-  var currentX = 0;
-  var currentY = 0;
+  let initialX = 0;
+  let initialY = 0;
+  let currentX = 0;
+  let currentY = 0;
 
   if (document.getElementById(element.id + "header")) {
     document.getElementById(element.id + "header").onmousedown = startDragging;
@@ -49,25 +48,108 @@ function dragElement(element) {
   }
 }
 
-dragElement(document.getElementById("welcome"));
-
-var welcomeScreen = document.querySelector("#welcome");
-
 function closeWindow(element) {
   element.style.display = "none";
 }
 
 function openWindow(element) {
   element.style.display = "flex";
+  biggestIndex++;
+  element.style.zIndex = biggestIndex;
 }
 
-var welcomeScreenClose = document.querySelector("#welcomeclose");
-var welcomeScreenOpen = document.querySelector("#welcomeopen");
+let biggestIndex = 1;
 
-welcomeScreenClose.addEventListener("click", function () {
-  closeWindow(welcomeScreen);
-});
+function addWindowTapHandling(element) {
+  element.addEventListener("mousedown", () => handleWindowTap(element));
+}
 
+function handleWindowTap(element) {
+  biggestIndex++;
+  element.style.zIndex = biggestIndex;
+}
+
+function initializeWindow(appName) {
+  const windowElement = document.getElementById(appName);
+  const closeButton = document.getElementById(appName + "close");
+
+  if (windowElement) {
+    dragElement(windowElement);
+    addWindowTapHandling(windowElement);
+  }
+
+  if (closeButton && windowElement) {
+    closeButton.addEventListener("click", function () {
+      closeWindow(windowElement);
+      handleWindowCloseSync(appName);
+    });
+  }
+}
+
+const welcomeScreen = document.querySelector("#welcome");
+const notesScreen = document.querySelector("#notes");
+
+initializeWindow("welcome");
+initializeWindow("notes");
+
+const welcomeScreenOpen = document.querySelector("#welcomeopen");
 welcomeScreenOpen.addEventListener("click", function () {
   openWindow(welcomeScreen);
+  const welcomeDockItem = document.querySelector(
+    '.dock-item[data-app="welcome"]',
+  );
+  if (welcomeDockItem) {
+    clearAllSelection();
+    welcomeDockItem.classList.add("selected");
+    selectedIcon = welcomeDockItem;
+  }
+});
+
+let selectedIcon = undefined;
+
+function clearAllSelection() {
+  const dockItems = document.querySelectorAll(".dock-item");
+  dockItems.forEach(function (item) {
+    item.classList.remove("selected");
+  });
+}
+
+function handleIconTap(iconElement) {
+  const appTarget = iconElement.getAttribute("data-app");
+  const targetWindow = document.getElementById(appTarget);
+
+  if (iconElement.classList.contains("selected")) {
+    iconElement.classList.remove("selected");
+    selectedIcon = undefined;
+    closeWindow(targetWindow);
+  } else {
+    if (selectedIcon) {
+      selectedIcon.classList.remove("selected");
+    }
+    iconElement.classList.add("selected");
+    selectedIcon = iconElement;
+    openWindow(targetWindow);
+  }
+}
+
+function handleWindowCloseSync(appName) {
+  const correspondingDockItem = document.querySelector(
+    '.dock-item[data-app="' + appName + '"]',
+  );
+  if (
+    correspondingDockItem &&
+    correspondingDockItem.classList.contains("selected")
+  ) {
+    correspondingDockItem.classList.remove("selected");
+    if (selectedIcon === correspondingDockItem) {
+      selectedIcon = undefined;
+    }
+  }
+}
+
+const dockItems = document.querySelectorAll(".dock-item");
+dockItems.forEach(function (item) {
+  item.addEventListener("click", function () {
+    handleIconTap(item);
+  });
 });
