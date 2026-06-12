@@ -35,7 +35,7 @@
 </script>
 
 <div
-  class="absolute top-0 left-0 w-full h-10 flex justify-between items-center px-4 box-border backdrop-blur-md bg-black/40 text-white z-1000 select-none"
+  class="absolute top-0 left-0 w-full h-10 flex justify-between items-center px-4 box-border backdrop-blur-md bg-black/40 text-white z-[1000] select-none"
 >
   <button
     type="button"
@@ -53,10 +53,10 @@
 <div class="pt-16 pl-4 h-[calc(100vh-100px)]"></div>
 
 <div
-  class="absolute bottom-3 left-0 w-full flex justify-center pointer-events-none z-2000"
+  class="group/dock fixed bottom-0 left-0 w-full h-16 flex justify-center items-end pb-2 pointer-events-auto z-[2000]"
 >
   <div
-    class="flex items-end gap-3 bg-white/10 backdrop-blur-xl px-3 py-2 rounded-[20px] border border-white/20 pointer-events-auto shadow-2xl"
+    class="flex items-end gap-3 bg-white/10 backdrop-blur-xl px-3 py-2 rounded-[20px] border border-white/20 shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-200 ease-out group-hover/dock:opacity-100 group-hover/dock:translate-y-0 group-hover/dock:pointer-events-auto"
   >
     <div
       role="button"
@@ -70,7 +70,7 @@
       <img
         src="{base}/assets/welcome.jpg"
         alt="Welcome"
-        class="w-12.5 h-12.5 rounded-xl block object-cover shadow-md transition-all"
+        class="w-12 h-12 rounded-xl block object-cover shadow-md transition-all"
         class:shadow-[0_0_12px_rgba(245,194,231,0.6)]={apps.welcome}
       />
       <span
@@ -91,7 +91,7 @@
       <img
         src="{base}/assets/notes.jpg"
         alt="Notes"
-        class="w-12.5 h-12.5 rounded-xl block object-cover shadow-md transition-all"
+        class="w-12 h-12 rounded-xl block object-cover shadow-md transition-all"
         class:shadow-[0_0_12px_rgba(245,194,231,0.6)]={apps.notes}
       />
       <span
