@@ -1,0 +1,18 @@
+# SvelteKit build files
+.svelte-kit/
+build/
+
+# Node dependencies
+node_modules/
+
+# Bun local files
+.lockb
+bun.lockb
+
+# Local environment variables
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
