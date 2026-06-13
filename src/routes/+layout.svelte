@@ -5,12 +5,7 @@
   let { children } = $props();
 </script>
 
-<div
-  class="w-screen h-screen overflow-hidden bg-cover bg-center bg-no-repeat bg-fixed"
-  style="background-image: url('{base}/assets/background.jpg');"
->
-  {@render children?.()}
-</div>
+{@render children?.()}
 
 <svelte:head></svelte:head>
 {@render children()}

@@ -15,23 +15,19 @@ body,
   overflow: hidden;
 }
 
-/* 1. Global Core Variable Definitions */
 :root {
   --radius: 0.625rem;
 
-  /* Shared Base Tokens */
   --bg-dark: oklch(0.145 0 0);
   --fg-light: oklch(0.985 0 0);
 
-  /* Your Chosen Custom Toggles/Sliders Accent (Catppuccin Green/Yellow testing value) */
   --custom-accent: oklch(0.87 0.0752 336.3);
   --custom-accent-fg: oklch(1 0, 0);
 
-  /* Structural Component Outlines (#45475a) */
+  /* Structural Component Outlines */
   --custom-border: oklch(0.36 0.03 260);
 }
 
-/* 2. Pure Tailwind 4 Dynamic Variable Engine Map */
 @theme inline {
   --font-sans: "Inter Variable", sans-serif;
 
@@ -43,15 +39,13 @@ body,
   --color-popover: oklch(0.269 0 0);
   --color-popover-foreground: var(--fg-light);
 
-  /* Fixes Switch & Slider Track Fills to follow your colorway automatically */
   --color-primary: var(--custom-accent);
   --color-primary-foreground: var(--custom-accent-fg);
 
-  /* Fixes Component Borders & Inactive Switch Tracks */
   --color-border: var(--custom-border);
   --color-input: var(--custom-border);
 
-  /* Remaining UI Elements Context Maps */
+  /* UI Elements Context Maps */
   --color-secondary: oklch(0.269 0 0);
   --color-secondary-foreground: var(--fg-light);
   --color-muted: oklch(0.269 0 0);
@@ -91,4 +85,8 @@ body,
   html {
     @apply font-sans;
   }
+}
+
+.desktop-wallpaper {
+  background: radial-gradient(circle at 50% 120%, #313244 0%, #11111b 100%);
 }
