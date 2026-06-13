@@ -36,6 +36,11 @@
 
     /** @param {MouseEvent} e */
     function startDragging(e) {
+      // Prevent drag tracking if a user clicks specifically on the close button node
+      if (/** @type {HTMLElement} */ (e.target).closest(".close-btn-target")) {
+        return;
+      }
+
       e.preventDefault();
       initialX = e.clientX;
       initialY = e.clientY;
@@ -83,27 +88,35 @@
   role="dialog"
   aria-label={title}
   tabindex="-1"
-  class="absolute top-[calc(50%-200px)] left-[calc(50%-400px)] w-200 bg-[#1e1e2e] rounded-[25px] overflow-hidden flex flex-col shadow-2xl select-none outline-none"
+  class="os-window absolute top-[calc(50%-200px)] left-[calc(50%-400px)] w-200 rounded-[24px] overflow-hidden flex flex-col shadow-2xl select-none outline-none"
   class:hidden={!isOpen}
   onmousedown={handleMouseDown}
 >
   <div
     bind:this={headerElement}
-    class="flex justify-between items-center px-4 py-2 bg-black/40 backdrop-blur-md border border-black cursor-move"
+    class="flex justify-between items-center px-5 h-12 border-b border-(--app-border) cursor-move relative bg-transparent"
   >
-    <button
-      type="button"
-      aria-label="Close window"
-      class="cursor-pointer text-2xl font-bold text-[#f38ba8] bg-[#f38ba8]/10 w-12.5 h-12.5 inline-flex items-center justify-center rounded transition-colors hover:bg-[#f38ba8]/30 border-0 p-0 normal-case outline-none"
-      onclick={onClose}
+    <div class="flex gap-2 items-center z-10">
+      <button
+        type="button"
+        onclick={onClose}
+        class="close-btn-target w-3 h-3 rounded-full bg-[#ff5f56] hover:brightness-90 transition-all cursor-pointer border-0 p-0 outline-none"
+        aria-label="Close Window"
+      ></button>
+      <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+      <div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+    </div>
+
+    <p
+      class="absolute inset-0 flex items-center justify-center m-0 pointer-events-none text-[13px] font-semibold tracking-wide opacity-80"
     >
-      &times;
-    </button>
-    <p class="m-0 font-medium text-[#cdd6f4]">{title}</p>
-    <div class="w-12.5"></div>
+      {title}
+    </p>
+
+    <div class="w-14"></div>
   </div>
 
-  <div class="border border-black p-5 text-[#cdd6f4]">
+  <div class="p-6 overflow-y-auto max-h-[calc(100vh-200px)]">
     {@render children?.()}
   </div>
 </div>
