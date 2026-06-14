@@ -1,24 +1,88 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
   import WelcomeApp from "$lib/apps/WelcomeApp.svelte";
   import NotesApp from "$lib/apps/NotesApp.svelte";
   import SettingsApp from "$lib/apps/SettingsApp.svelte";
   import Dock from "$lib/components/Dock.svelte";
+  import AltTab from "$lib/components/AltTab.svelte";
   import Icon from "@iconify/svelte";
+
+  type AppId = "welcome" | "notes" | "settings";
+
+  type WindowState = {
+    open: boolean;
+    minimized: boolean;
+    focused: boolean;
+  };
+
+  type AppMeta = {
+    id: AppId;
+    icon: string;
+    label: string;
+    component: any;
+  };
+
+  const appRegistry: AppMeta[] = [
+    {
+      id: "welcome",
+      icon: "mdi:monitor-dashboard",
+      label: "Welcome",
+      component: WelcomeApp,
+    },
+    {
+      id: "notes",
+      icon: "mdi:note-text-outline",
+      label: "Notes",
+      component: NotesApp,
+    },
+    {
+      id: "settings",
+      icon: "mdi:cog",
+      label: "Settings",
+      component: SettingsApp,
+    },
+  ];
+
+  const appIds = appRegistry.map((a) => a.id);
 
   let currentTime = $state("");
   let connectionType = $state("wifi");
 
-  /** @type {{ welcome: boolean; notes: boolean; settings: boolean; [key: string]: boolean }} */
-  let apps = $state({
-    welcome: false,
-    notes: false,
-    settings: false,
+  let windows = $state<Record<AppId, WindowState>>({
+    welcome: { open: false, minimized: false, focused: false },
+    notes: { open: false, minimized: false, focused: false },
+    settings: { open: false, minimized: false, focused: false },
   });
 
-  onMount(() => {
-    /** @type {*} */ (window).biggestIndex = 10;
+  function focusApp(app: AppId) {
+    for (const id of appIds) {
+      windows[id].focused = id === app;
+    }
+  }
 
+  function bringToFront(app: AppId) {
+    const container = document.getElementById("window-surface");
+    const el = container?.querySelector(`[data-app-name="${app}"]`);
+    if (el && container) container.appendChild(el);
+  }
+
+  function openApp(app: AppId) {
+    windows[app].open = true;
+    windows[app].minimized = false;
+    focusApp(app);
+    setTimeout(() => bringToFront(app), 10);
+  }
+
+  function closeApp(app: AppId) {
+    windows[app].open = false;
+    windows[app].focused = false;
+  }
+
+  function toggleApp(app: AppId) {
+    windows[app].open ? closeApp(app) : openApp(app);
+  }
+
+  onMount(() => {
     const updateTime = () => {
       const now = new Date();
       currentTime =
@@ -34,146 +98,63 @@
           hour12: true,
         });
     };
+
     const timer = setInterval(updateTime, 1000);
     updateTime();
 
-    const nav = /** @type {*} */ (navigator);
-    const connection =
-      nav.connection || nav.mozConnection || nav.webkitConnection;
+    const net = () => (connectionType = navigator.onLine ? "wifi" : "none");
 
-    const updateNetworkStatus = () => {
-      if (!navigator.onLine) {
-        connectionType = "none";
-        return;
-      }
-
-      if (connection) {
-        const type = connection.type || "wifi";
-        if (type === "cellular" || type === "wimax") {
-          connectionType = "cellular";
-        } else if (type === "ethernet") {
-          connectionType = "ethernet";
-        } else {
-          connectionType = "wifi";
-        }
-      } else {
-        const isMobileDevice = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-        if (isMobileDevice) {
-          connectionType = "cellular";
-        } else {
-          connectionType = "wifi";
-        }
-      }
-    };
-
-    updateNetworkStatus();
-    if (connection) connection.addEventListener("change", updateNetworkStatus);
-    window.addEventListener("online", updateNetworkStatus);
-    window.addEventListener("offline", updateNetworkStatus);
+    net();
+    window.addEventListener("online", net);
+    window.addEventListener("offline", net);
 
     return () => {
       clearInterval(timer);
-      if (connection)
-        connection.removeEventListener("change", updateNetworkStatus);
-      window.removeEventListener("online", updateNetworkStatus);
-      window.removeEventListener("offline", updateNetworkStatus);
+      window.removeEventListener("online", net);
+      window.removeEventListener("offline", net);
     };
   });
-
-  /** @param {string} appName */
-  function toggleApp(appName) {
-    apps[appName] = !apps[appName];
-  }
-
-  /** * @param {KeyboardEvent} e
-   * @param {string} appName
-   */
-  function handleKeyDown(e, appName) {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      toggleApp(appName);
-    }
-  }
 </script>
 
 <div class="desktop-wallpaper absolute inset-0 z-0 pointer-events-none"></div>
+
 <div
   class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_top_right,rgba(245,194,231,0.15),transparent_45%)] pointer-events-none"
 ></div>
+
 <div
   class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_bottom_left,rgba(166,227,161,0.1),transparent_50%)] pointer-events-none"
 ></div>
 
 <div
-  class="absolute top-0 left-0 w-full h-8 flex justify-between items-center px-4 box-border backdrop-blur-xl bg-black/15 border-b border-white/5 text-white/90 z-1000 text-[13px] font-medium tracking-wide"
+  class="absolute top-0 left-0 w-full h-8 flex justify-between items-center px-4 backdrop-blur-xl bg-black/15 border-b border-white/5 text-white/90 z-1000"
 >
   <div class="flex items-center gap-4">
-    <div class="font-bold text-white flex items-center gap-1">
+    <div class="font-bold flex items-center gap-1">
       <Icon icon="mdi:fruit-citrus" class="w-4 h-4" />
       berryOS
     </div>
-
-    <span
-      class="hidden md:inline-block opacity-60 hover:opacity-100 cursor-pointer transition-opacity"
-      >File</span
-    >
-    <span
-      class="hidden md:inline-block opacity-60 hover:opacity-100 cursor-pointer transition-opacity"
-      >Edit</span
-    >
-    <span
-      class="hidden md:inline-block opacity-60 hover:opacity-100 cursor-pointer transition-opacity"
-      >View</span
-    >
-    <span
-      class="hidden md:inline-block opacity-60 hover:opacity-100 cursor-pointer transition-opacity"
-      >Window</span
-    >
   </div>
 
   <div class="flex items-center gap-3.5">
-    <div class="flex items-center gap-2 opacity-75">
-      {#if connectionType === "wifi"}
-        <Icon
-          icon="mdi:wifi"
-          class="w-4 h-4 cursor-pointer hover:text-[#f5c2e7]"
-        />
-      {:else if connectionType === "ethernet"}
-        <Icon
-          icon="mdi:ethernet-cable"
-          class="w-4 h-4 cursor-pointer hover:text-[#f5c2e7]"
-        />
-      {:else if connectionType === "cellular"}
-        <Icon
-          icon="mdi:signal-cellular-3"
-          class="w-4 h-4 cursor-pointer hover:text-[#f5c2e7]"
-        />
-      {:else}
-        <Icon icon="mdi:wifi-off" class="w-4 h-4 cursor-pointer text-red-400" />
-      {/if}
-
-      <Icon
-        icon="mdi:battery-80"
-        class="w-4 h-4 cursor-pointer hover:text-[#f5c2e7]"
-      />
-      <Icon
-        icon="mdi:tune-vertical"
-        class="w-4 h-4 cursor-pointer hover:text-[#f5c2e7]"
-      />
-    </div>
-
-    <div class="w-px h-3 bg-white/20"></div>
-
-    <p class="font-normal font-sans tracking-normal opacity-85">
-      {currentTime || "TIME"}
-    </p>
+    <p>{currentTime || "TIME"}</p>
   </div>
 </div>
 
-<WelcomeApp isOpen={apps.welcome} onClose={() => (apps.welcome = false)} />
-<NotesApp isOpen={apps.notes} onClose={() => (apps.notes = false)} />
-<SettingsApp isOpen={apps.settings} onClose={() => (apps.settings = false)} />
+<div id="window-surface" class="absolute inset-0 z-10">
+  {#each appRegistry as app}
+    {#if windows[app.id].open}
+      <div data-app-name={app.id} class="absolute inset-0 pointer-events-none">
+        <div class="pointer-events-auto w-full h-full">
+          <app.component
+            isOpen={windows[app.id].open}
+            onClose={() => closeApp(app.id)}
+          />
+        </div>
+      </div>
+    {/if}
+  {/each}
+</div>
 
-<div class="pt-12 pl-4 h-[calc(100vh-32px)] box-border"></div>
-
-<Dock {apps} {toggleApp} {handleKeyDown} />
+<Dock {windows} {appRegistry} {toggleApp} />
+<AltTab {windows} {appRegistry} />

@@ -7,7 +7,12 @@ const getSystemTheme = () => {
   return "dark";
 };
 
-export const desktopSettings = $state({
+type DesktopSettings = {
+  autohide: boolean;
+  theme: "light" | "dark";
+};
+
+export const desktopSettings = $state<DesktopSettings>({
   autohide: false,
   theme: getSystemTheme(),
 });
