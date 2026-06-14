@@ -10,11 +10,13 @@ const getSystemTheme = () => {
 type DesktopSettings = {
   autohide: boolean;
   theme: "light" | "dark";
+  customWallpaper: string | null;
 };
 
 export const desktopSettings = $state<DesktopSettings>({
   autohide: false,
   theme: getSystemTheme(),
+  customWallpaper: null,
 });
 
 if (typeof window !== "undefined" && window.matchMedia) {

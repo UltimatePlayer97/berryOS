@@ -6,6 +6,7 @@
   import Dock from "$lib/components/Dock.svelte";
   import AltTab from "$lib/components/AltTab.svelte";
   import Icon from "@iconify/svelte";
+  import { desktopSettings } from "$lib/state.svelte";
 
   type AppId = "welcome" | "notes" | "settings";
 
@@ -44,9 +45,7 @@
   ];
 
   const appIds = appRegistry.map((a) => a.id);
-
   let currentTime = $state("");
-  let connectionType = $state("wifi");
 
   let windows = $state<Record<AppId, WindowState>>({
     welcome: { open: false, minimized: false, focused: false },
@@ -102,29 +101,24 @@
     const timer = setInterval(updateTime, 1000);
     updateTime();
 
-    const net = () => (connectionType = navigator.onLine ? "wifi" : "none");
-
-    net();
-    window.addEventListener("online", net);
-    window.addEventListener("offline", net);
-
-    return () => {
-      clearInterval(timer);
-      window.removeEventListener("online", net);
-      window.removeEventListener("offline", net);
-    };
+    return () => clearInterval(timer);
   });
 </script>
 
-<div class="desktop-wallpaper absolute inset-0 z-0 pointer-events-none"></div>
-
-<div
-  class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_top_right,rgba(245,194,231,0.15),transparent_45%)] pointer-events-none"
-></div>
-
-<div
-  class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_bottom_left,rgba(166,227,161,0.1),transparent_50%)] pointer-events-none"
-></div>
+{#if desktopSettings.customWallpaper}
+  <div
+    class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-300"
+    style="background-image: url({desktopSettings.customWallpaper})"
+  ></div>
+{:else}
+  <div class="desktop-wallpaper absolute inset-0 z-0 pointer-events-none"></div>
+  <div
+    class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_top_right,rgba(245,194,231,0.15),transparent_45%)] pointer-events-none"
+  ></div>
+  <div
+    class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_bottom_left,rgba(166,227,161,0.1),transparent_50%)] pointer-events-none"
+  ></div>
+{/if}
 
 <div
   class="absolute top-0 left-0 w-full h-8 flex justify-between items-center px-4 backdrop-blur-xl bg-black/15 border-b border-white/5 text-white/90 z-1000"
@@ -135,9 +129,8 @@
       berryOS
     </div>
   </div>
-
   <div class="flex items-center gap-3.5">
-    <p>{currentTime || "TIME"}</p>
+    <p class="text-[13px] font-medium">{currentTime || "TIME"}</p>
   </div>
 </div>
 
