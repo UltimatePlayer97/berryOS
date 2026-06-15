@@ -44,7 +44,11 @@
           ? 'bg-black/5 dark:bg-white/15 shadow-sm font-semibold'
           : 'opacity-60 hover:opacity-100 hover:bg-black/2 dark:hover:bg-white/5'}"
       >
-        <Icon icon="mdi:cog" class="w-4 h-4 text-pink-400" />
+        <Icon
+          icon="mdi:cog"
+          class="w-4 h-4 transition-colors"
+          style="color: {desktopSettings.accentColor || '#ea76cb'}"
+        />
         <span class="text-sm">General</span>
       </button>
 
@@ -55,7 +59,11 @@
           ? 'bg-black/5 dark:bg-white/15 shadow-sm font-semibold'
           : 'opacity-60 hover:opacity-100 hover:bg-black/2 dark:hover:bg-white/5'}"
       >
-        <Icon icon="mdi:palette" class="w-4 h-4 text-pink-400" />
+        <Icon
+          icon="mdi:palette"
+          class="w-4 h-4 transition-colors"
+          style="color: {desktopSettings.accentColor || '#ea76cb'}"
+        />
         <span class="text-sm">Personalization</span>
       </button>
     </div>
@@ -67,6 +75,7 @@
         <h2 class="text-xl font-bold mb-4 border-b border-(--app-border) pb-2">
           General Options
         </h2>
+        <div class="flex flex-col gap-3 mt-4"></div>
       {/if}
 
       {#if currentTab === "personalization"}
@@ -89,7 +98,9 @@
               />
             {:else}
               <div
-                class="w-full h-full bg-linear-to-tr from-[#1e1e2e] to-[#cba6f7] flex items-center justify-center"
+                class="w-full h-full transition-all duration-300"
+                style="background: linear-gradient(135deg, #11111b 0%, {desktopSettings.accentColor ||
+                  '#ea76cb'} 100%);"
               ></div>
             {/if}
             <div
@@ -99,18 +110,87 @@
               <span>12:00 PM</span>
             </div>
             <div
-              class="absolute bottom-1 w-1/3 h-2 bg-white/20 backdrop-blur-xs rounded-xs"
+              class="absolute bottom-1 w-1/3 h-2 rounded-xs transition-colors"
+              style="background-color: {desktopSettings.accentColor ||
+                '#ea76cb'}; opacity: 0.6;"
             ></div>
           </div>
         </div>
 
         <div class="flex flex-col gap-3">
           <div
+            class="flex flex-col gap-4 bg-black/2 dark:bg-black/20 rounded-xl border border-(--app-border) p-4"
+          >
+            <div class="flex flex-col gap-1">
+              <p class="text-sm font-semibold">System Accent Color</p>
+              <p class="text-xs opacity-60">
+                Choose a primary highlight tone for workspace elements
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 mt-1">
+              {#each ["#ea76cb", "#38bdf8", "#4ade80", "#fbbf24", "#f472b6", "#a78bfa"] as color}
+                <button
+                  type="button"
+                  onclick={() => (desktopSettings.accentColor = color)}
+                  class="w-7 h-7 rounded-full border-2 transition cursor-pointer hover:scale-110 active:scale-95"
+                  style="background-color: {color}; border-color: {desktopSettings.accentColor ===
+                  color
+                    ? '#ffffff'
+                    : 'transparent'}; box-shadow: {desktopSettings.accentColor ===
+                  color
+                    ? '0 0 0 1px rgba(0,0,0,0.3)'
+                    : 'none'};"
+                  aria-label="Select accent {color}"
+                ></button>
+              {/each}
+
+              <div class="w-px h-6 bg-(--app-border) mx-1"></div>
+
+              <div class="flex items-center gap-2">
+                <label
+                  class="relative w-8 h-8 rounded-xl border border-white/20 flex items-center justify-center cursor-pointer overflow-hidden bg-black/10 hover:bg-black/20 transition-all active:scale-95"
+                  style="background-color: {desktopSettings.accentColor ||
+                    '#ea76cb'}"
+                >
+                  <Icon
+                    icon="mdi:color-picker"
+                    class="w-4 h-4 z-10 pointer-events-none drop-shadow-sm"
+                    style="color: {desktopSettings.accentColor === '#ffffff'
+                      ? '#11111b'
+                      : '#ffffff'}"
+                  />
+
+                  <input
+                    type="color"
+                    value={desktopSettings.accentColor || "#ea76cb"}
+                    oninput={(e) => {
+                      const target = e.target as HTMLInputElement;
+                      desktopSettings.accentColor = target.value;
+                    }}
+                    class="absolute inset-0 opacity-0 w-full h-full cursor-pointer scale-150"
+                  />
+                </label>
+
+                <span
+                  class="text-xs font-mono opacity-70 uppercase tracking-wider"
+                >
+                  {desktopSettings.accentColor || "#ea76cb"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div
             class="flex flex-col gap-3 bg-black/2 dark:bg-black/20 rounded-xl border border-(--app-border) p-4"
           >
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <Icon icon="mdi:image-plus" class="w-5 h-5 text-pink-400" />
+                <Icon
+                  icon="mdi:image-plus"
+                  class="w-5 h-5 transition-colors"
+                  style="color: {desktopSettings.accentColor || '#ea76cb'}"
+                />
                 <div>
                   <p class="text-sm font-semibold">Custom Background Image</p>
                   <p class="text-xs opacity-60 mt-0.5">
@@ -129,7 +209,9 @@
                   </button>
                 {/if}
                 <label
-                  class="px-3 py-1.5 text-xs font-semibold text-white bg-pink-500 hover:bg-pink-600 rounded-lg cursor-pointer transition shadow-sm"
+                  class="px-3 py-1.5 text-xs font-semibold text-white rounded-lg cursor-pointer transition shadow-sm hover:brightness-110"
+                  style="background-color: {desktopSettings.accentColor ||
+                    '#ea76cb'}"
                 >
                   Choose File
                   <input
@@ -143,37 +225,40 @@
             </div>
           </div>
 
-          <div class="flex flex-col gap-3 mt-4">
-            <div
-              class="flex items-center justify-between bg-black/2 dark:bg-black/20 rounded-xl border border-(--app-border) p-4"
-            >
-              <div class="flex items-center gap-3">
-                <Icon
-                  icon="mdi:theme-light-dark"
-                  class="w-5 h-5 text-pink-400"
-                />
-                <div>
-                  <p class="text-sm font-semibold">System Color Theme</p>
-                  <p class="text-xs opacity-60 mt-0.5">
-                    Switch between dark and light system profiles
-                  </p>
-                </div>
+          <div
+            class="flex items-center justify-between bg-black/2 dark:bg-black/20 rounded-xl border border-(--app-border) p-4"
+          >
+            <div class="flex items-center gap-3">
+              <Icon
+                icon="mdi:theme-light-dark"
+                class="w-5 h-5 transition-colors"
+                style="color: {desktopSettings.accentColor || '#ea76cb'}"
+              />
+              <div>
+                <p class="text-sm font-semibold">System Color Theme</p>
+                <p class="text-xs opacity-60 mt-0.5">
+                  Switch between dark and light system profiles
+                </p>
               </div>
-              <select
-                bind:value={desktopSettings.theme}
-                class="bg-white/80 dark:bg-black/40 px-3 py-1.5 rounded-lg border border-(--app-border) outline-none text-xs text-(--app-text) cursor-pointer"
-              >
-                <option value="dark">🌙 Dark</option>
-                <option value="light">☀️ Light</option>
-              </select>
             </div>
+            <select
+              bind:value={desktopSettings.theme}
+              class="bg-white/80 dark:bg-black/40 px-3 py-1.5 rounded-lg border border-(--app-border) outline-none text-xs text-(--app-text) cursor-pointer"
+            >
+              <option value="dark">🌙 Dark</option>
+              <option value="light">☀️ Light</option>
+            </select>
           </div>
 
           <div
             class="flex items-center justify-between bg-black/2 dark:bg-black/20 rounded-xl border border-(--app-border) p-4"
           >
             <div class="flex items-center gap-3">
-              <Icon icon="mdi:dock-bottom" class="w-5 h-5 text-pink-400" />
+              <Icon
+                icon="mdi:dock-bottom"
+                class="w-5 h-5 transition-colors"
+                style="color: {desktopSettings.accentColor || '#ea76cb'}"
+              />
               <div>
                 <p class="text-sm font-semibold">Autohide Desktop Dock</p>
                 <p class="text-xs opacity-60 mt-0.5">

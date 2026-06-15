@@ -20,7 +20,7 @@
     id: AppId;
     icon: string;
     label: string;
-    component: any;
+    component: import("svelte").Component<any, any, any>;
   };
 
   const appRegistry: AppMeta[] = [
@@ -105,49 +105,69 @@
   });
 </script>
 
-{#if desktopSettings.customWallpaper}
-  <div
-    class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-300"
-    style="background-image: url({desktopSettings.customWallpaper})"
-  ></div>
-{:else}
-  <div class="desktop-wallpaper absolute inset-0 z-0 pointer-events-none"></div>
-  <div
-    class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_top_right,rgba(245,194,231,0.15),transparent_45%)] pointer-events-none"
-  ></div>
-  <div
-    class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_bottom_left,rgba(166,227,161,0.1),transparent_50%)] pointer-events-none"
-  ></div>
-{/if}
-
 <div
-  class="absolute top-0 left-0 w-full h-8 flex justify-between items-center px-4 backdrop-blur-xl bg-black/15 border-b border-white/5 text-white/90 z-1000"
+  class="w-full h-full overflow-hidden relative {desktopSettings.theme}"
+  style="--custom-accent: {desktopSettings.accentColor ||
+    '#ea76cb'}; --color-primary: {desktopSettings.accentColor || '#ea76cb'};"
 >
-  <div class="flex items-center gap-4">
-    <div class="font-bold flex items-center gap-1">
-      <Icon icon="mdi:fruit-citrus" class="w-4 h-4" />
-      berryOS
+  {#if desktopSettings.customWallpaper}
+    <div
+      class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-300"
+      style="background-image: url({desktopSettings.customWallpaper})"
+    ></div>
+  {:else}
+    <div
+      class="absolute inset-0 z-0 transition-all duration-500 ease-in-out"
+      style="background: {desktopSettings.theme === 'dark'
+        ? `radial-gradient(circle at 50% 120%, ${desktopSettings.accentColor}25 0%, #11111b 100%)`
+        : `radial-gradient(circle at 50% 120%, ${desktopSettings.accentColor}35 0%, #eff1f5 100%)`};"
+    ></div>
+
+    <div
+      class="absolute inset-0 opacity-40 transition-all duration-500"
+      style="background: radial-gradient(circle at top right, {desktopSettings.accentColor}20, transparent 45%); pointer-events: none;"
+    ></div>
+    <div
+      class="absolute inset-0 opacity-20 transition-all duration-500"
+      style="background: radial-gradient(circle at bottom left, {desktopSettings.accentColor}30, transparent 50%); pointer-events: none;"
+    ></div>
+  {/if}
+
+  <div
+    class="absolute top-0 left-0 w-full h-8 flex justify-between items-center px-4 backdrop-blur-xl bg-black/15 border-b border-white/5 text-white/90 z-999"
+  >
+    <div class="flex items-center gap-4">
+      <div class="font-bold flex items-center gap-1">
+        <Icon icon="mdi:fruit-citrus" class="w-4 h-4" />
+        berryOS
+      </div>
+    </div>
+    <div class="flex items-center gap-3.5">
+      <p class="text-[13px] font-medium">{currentTime || "TIME"}</p>
     </div>
   </div>
-  <div class="flex items-center gap-3.5">
-    <p class="text-[13px] font-medium">{currentTime || "TIME"}</p>
-  </div>
-</div>
 
-<div id="window-surface" class="absolute inset-0 z-10">
-  {#each appRegistry as app}
-    {#if windows[app.id].open}
-      <div data-app-name={app.id} class="absolute inset-0 pointer-events-none">
-        <div class="pointer-events-auto w-full h-full">
-          <app.component
-            isOpen={windows[app.id].open}
-            onClose={() => closeApp(app.id)}
-          />
+  <div
+    id="window-surface"
+    class="absolute inset-0 top-8 bottom-16 z-10 pointer-events-none"
+  >
+    {#each appRegistry as app}
+      {#if windows[app.id].open}
+        <div
+          data-app-name={app.id}
+          class="absolute inset-0 pointer-events-auto flex items-center justify-center"
+        >
+          {#if app.component}
+            <app.component
+              isOpen={windows[app.id].open}
+              onClose={() => closeApp(app.id)}
+            />
+          {/if}
         </div>
-      </div>
-    {/if}
-  {/each}
-</div>
+      {/if}
+    {/each}
+  </div>
 
-<Dock {windows} {appRegistry} {toggleApp} />
-<AltTab {windows} {appRegistry} />
+  <Dock {windows} {appRegistry} {toggleApp} />
+  <AltTab {windows} {appRegistry} />
+</div>
