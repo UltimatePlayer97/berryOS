@@ -1,6 +1,9 @@
 # 🍓 berryOS
 
-A sleek, highly responsive web-based desktop environment and OS simulation inspired by the aesthetics of macOS, built entirely with modern frontend technologies.
+a web-based desktop environment, inspired by macOS, built for speed and simplicity.
+
+<img width="1299" height="682" alt="image" src="https://github.com/user-attachments/assets/77634316-ef53-4521-914e-b4ba06cdecbd" />
+
 
 🚀 **[Try berryOS Live Here](https://ultimateplayer97.github.io/berryOS/)**
 ---
@@ -14,17 +17,17 @@ A sleek, highly responsive web-based desktop environment and OS simulation inspi
 ---
 
 ## 🗺️ Roadmap
-- [ ] **IndexedDB File System**: Establish virtual hard-drive tracking hooks `Dexie.js` so users can permanently save local notes files across application boot states.
-- [ ] **Persistent Storage**: Cache theme variables and active wallpaper assets into local memory blocks so settings persist after browser refreshes.
-- [ ] **App Expansion**: Roll out a custom terminal simulator and a media streaming application player dashboard, alongside a possible browser implementation
+- [ ] **IndexedDB File System**: Utilize `Dexie.js` to enable virtual hard disks and databases for the notes app.
+- [ ] **Persistent Storage**: Cache theme variables and active wallpaper assets into local memory so settings persisteven after the window refreshes.
+- [ ] **App Expansion**: Roll out a terminal emulator and a media streaming application player dashboard, alongside a possible browser implementation
 
 ---
 
 ## 📦 Getting Started
 
-If you want to pull down the workspace to inspect or expand the application engine locally:
+Wanna contribute or just check it out locally? No worries, here are the steps.
 
-### Prerequesteries
+### Prerequisites
 - [NodeJS](https://nodejs.org/en/download)
 - [Bun](https://bun.sh/)
 
@@ -42,14 +45,14 @@ bun install
 ```
 bun run dev
 ```
-Open `http://localhost:5173` in your browser to inspect your live workspace!
+Open `http://localhost:5173` in your browser to inspect your development server.
 
 ### Build for production
 ```
 bun run build
 ```
 
-Static files are generated inside the `build/` directory. To preview the production environment run
+Static files are generated inside the `build/` directory. To preview the production environment run:
 ```
 bun run preview
 ```
