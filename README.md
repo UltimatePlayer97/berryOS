@@ -1,12 +1,15 @@
 # 🍓 berryOS
 
-a web-based desktop environment, inspired by macOS, built for speed and simplicity.
-
 <img width="1299" height="682" alt="image" src="https://github.com/user-attachments/assets/77634316-ef53-4521-914e-b4ba06cdecbd" />
 
 
 🚀 **[Try berryOS Live Here](https://ultimateplayer97.github.io/berryOS/)**
 ---
+
+## 💭 What is it?
+a web-based desktop environment, inspired by macOS, built for speed and simplicity.
+
+First starting as a simple HTML, CSS, and JavaScript project, it evolved into a full SvelteKit app, boasting a robust decentralised app component system. alongside a theming system, all built from the ground up. Components were used from Shadcn, as I did not want to waste hours of my life making subpar components like switches and sliders just for someone to do it much better than I can. I wish to build on this project continuously, adding onto it as I go, who knows, maybe I will make it into a full-blown Linux desktop environment one day :)
 
 ## 🛠️ Built With
 
